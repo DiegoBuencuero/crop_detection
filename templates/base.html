@@ -17,13 +17,18 @@
 </head>
 <body>
     <div class="container-scroller">
-        <!-- NAVBAR SIMPLE -->
+        <!-- NAVBAR -->
         <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-center flex-row bg-white">
             <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+                <div class="me-3">
+                    <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+                        <span class="icon-menu"></span>
+                    </button>
+                </div>
                 <div>
                     <a class="navbar-brand brand-logo" href="/">
-                        <i class="mdi mdi-leaf" style="font-size: 1.5rem; color: #15803d;"></i>
-                        <span style="margin-left: 8px; color: #333; font-weight: 700;">Crop Detection</span>
+                        <i class="mdi mdi-leaf" style="font-size: 1.5rem; color: #15803d; margin-right: 8px;"></i>
+                        <span style="color: #333; font-weight: 700;">Crop Detection</span>
                     </a>
                 </div>
             </div>
@@ -44,8 +49,59 @@
             </div>
         </nav>
 
-        <!-- CONTENT -->
+        <!-- CONTENT WRAPPER -->
         <div class="container-fluid page-body-wrapper">
+            <!-- SIDEBAR -->
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                <ul class="nav">
+                    <li class="nav-item nav-category">Menu</li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="menu-icon mdi mdi-home"></i>
+                            <span class="menu-title">Inicio</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item nav-category">Sistema</li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/api">
+                            <i class="menu-icon mdi mdi-code-json"></i>
+                            <span class="menu-title">API REST</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">
+                            <i class="menu-icon mdi mdi-cog"></i>
+                            <span class="menu-title">Administración</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item nav-category">Información</li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#cultivos" aria-expanded="false" aria-controls="cultivos">
+                            <i class="menu-icon mdi mdi-leaf"></i>
+                            <span class="menu-title">Cultivos</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="cultivos">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"><a class="nav-link" href="#">Maíz <code>maiz</code></a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">Trigo <code>trigo</code></a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">Soja <code>soja</code></a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">Girasol <code>girasol</code></a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">Cebada <code>cebada</code></a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                </ul>
+            </nav>
+
+            <!-- MAIN PANEL -->
             <div class="main-panel">
                 <div class="content-wrapper">
                     {% block content %}{% endblock %}
