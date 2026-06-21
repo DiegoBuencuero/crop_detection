@@ -2,9 +2,14 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils import timezone
+from django.shortcuts import render
 from .models import AnalisisImagen, TipoCultivo, RegistroAnalisis
 from .serializers import AnalisisImagenSerializer, TipoCultivoSerializer, RegistroAnalisisSerializer
 from ml_modules.processors import procesar_imagen_cultivos
+
+
+def index(request):
+    return render(request, 'index.html')
 
 
 class TipoCultivoViewSet(viewsets.ReadOnlyModelViewSet):

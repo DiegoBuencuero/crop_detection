@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Crop Detection{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="page-title">
+            <i class="fas fa-leaf"></i> Sistema de Detección de Cultivos
+        </h1>
+        <p class="text-muted">Sube una imagen de tu cultivo y obtén identificación automática y conteo de plantas</p>
+    </div>
+</div>
+
+<!-- Cards de características -->
+<div class="row mb-5">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-image fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Upload de Imágenes</h5>
+                <p class="card-text text-muted">
+                    Sube fotos de tus cultivos en alta calidad
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-brain fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Identificación IA</h5>
+                <p class="card-text text-muted">
+                    Detecta automáticamente el tipo de cultivo
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-bar fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Conteo Preciso</h5>
+                <p class="card-text text-muted">
+                    Obtén el número exacto de plantas detectadas
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- API REST -->
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">🔗 API REST</h2>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-left-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <span class="badge bg-success">POST</span> Subir Imagen
+                </h5>
+                <p class="card-text text-muted mb-2">
+                    <code>/api/analisis/</code>
+                </p>
+                <p class="small">Sube una imagen y obtén análisis automático</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-left-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <span class="badge bg-info">GET</span> Listar Análisis
+                </h5>
+                <p class="card-text text-muted mb-2">
+                    <code>/api/analisis/</code>
+                </p>
+                <p class="small">Obtén todos los análisis realizados</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-left-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <span class="badge bg-info">GET</span> Tipos de Cultivos
+                </h5>
+                <p class="card-text text-muted mb-2">
+                    <code>/api/tipos-cultivo/</code>
+                </p>
+                <p class="small">Cultivos disponibles en el sistema</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-left-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <span class="badge bg-info">GET</span> Registros
+                </h5>
+                <p class="card-text text-muted mb-2">
+                    <code>/api/registros/</code>
+                </p>
+                <p class="small">Historial de análisis realizados</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Botones de acción -->
+<div class="row mt-5 mb-5">
+    <div class="col-12">
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="/api" class="btn btn-success">
+                <i class="fas fa-code"></i> Ver API
+            </a>
+            <a href="/admin" class="btn btn-outline-secondary">
+                <i class="fas fa-cog"></i> Panel Admin
+            </a>
+            <a href="https://github.com/DiegoBuencuero/crop_detection" target="_blank" class="btn btn-outline-secondary">
+                <i class="fab fa-github"></i> Código Fuente
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Cultivos disponibles -->
+<div class="row">
+    <div class="col-12">
+        <h3 class="mb-3">🌾 Cultivos Disponibles</h3>
+    </div>
+
+    <div class="col-12">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>maiz</code></td>
+                        <td><strong>Maíz</strong></td>
+                        <td>Cultivo de maíz grano</td>
+                    </tr>
+                    <tr>
+                        <td><code>trigo</code></td>
+                        <td><strong>Trigo</strong></td>
+                        <td>Cultivo de trigo</td>
+                    </tr>
+                    <tr>
+                        <td><code>soja</code></td>
+                        <td><strong>Soja</strong></td>
+                        <td>Cultivo de soja</td>
+                    </tr>
+                    <tr>
+                        <td><code>girasol</code></td>
+                        <td><strong>Girasol</strong></td>
+                        <td>Cultivo de girasol</td>
+                    </tr>
+                    <tr>
+                        <td><code>cebada</code></td>
+                        <td><strong>Cebada</strong></td>
+                        <td>Cultivo de cebada</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
