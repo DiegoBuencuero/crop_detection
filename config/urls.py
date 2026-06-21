@@ -11,7 +11,7 @@ from django.conf.urls.static import static
 from cultivos.views import index
 
 urlpatterns = [
-    path('', index, name='home'),
+    path('', index, name='index'),
     path('admin/', admin.site.urls),
     path('api/', include('cultivos.urls')),
 ]
