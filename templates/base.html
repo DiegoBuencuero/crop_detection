@@ -1,5 +1,4 @@
 {% load static %}
-{% load i18n %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,54 +6,112 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}Crop Detection{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'vendors/feather/feather.css' %}">
+    <!-- Vendors CSS -->
     <link rel="stylesheet" href="{% static 'vendors/mdi/css/materialdesignicons.min.css' %}">
     <link rel="stylesheet" href="{% static 'vendors/css/vendor.bundle.base.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="shortcut icon" href="{% static 'images/logo_chico.png' %}" />
+
+    <style>
+        :root {
+            --primary: #15803d;
+            --secondary: #f5f5f5;
+        }
+        
+        body {
+            background-color: #fafafa;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .sidebar {
+            background: white;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .nav-link {
+            color: #6b7280;
+            padding: 0.75rem 1.5rem;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background-color: #f0fdf4;
+            border-left-color: var(--primary);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background-color: #f0fdf4;
+            border-left-color: var(--primary);
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-success {
+            background-color: var(--primary) !important;
+            border-color: var(--primary) !important;
+        }
+
+        .btn-success:hover {
+            background-color: #15803d !important;
+            border-color: #15803d !important;
+        }
+    </style>
 
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="container-scroller">
         <!-- NAVBAR -->
-        <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-center flex-row bg-white">
-            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
-                <div class="me-3">
-                    <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
-                        <span class="icon-menu"></span>
-                    </button>
-                </div>
-                <div>
-                    <a class="navbar-brand brand-logo" href="/">
-                        <i class="mdi mdi-leaf" style="font-size: 1.5rem; color: #15803d; margin-right: 8px;"></i>
-                        <span style="color: #333; font-weight: 700;">Crop Detection</span>
-                    </a>
-                </div>
+        <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-center">
+            <div class="navbar-brand-wrapper">
+                <button class="navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+                    <span class="icon-menu"></span>
+                </button>
+                <a class="navbar-brand" href="/" style="margin-left: 1rem;">
+                    <i class="mdi mdi-leaf" style="font-size: 1.8rem; color: var(--primary); margin-right: 0.5rem;"></i>
+                    <span style="color: #1f2937; font-weight: 700; font-size: 1.1rem;">Crop Detection</span>
+                </a>
             </div>
 
-            <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end w-100 pe-3">
+            <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end" style="flex: 1;">
                 <ul class="navbar-nav navbar-nav-right">
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin">
-                            <i class="mdi mdi-cog"></i> Admin
+                        <a class="nav-link" href="/api">
+                            <i class="mdi mdi-code-json" style="margin-right: 0.5rem;"></i>API
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/api">
-                            <i class="mdi mdi-code-json"></i> API
+                        <a class="nav-link" href="/admin">
+                            <i class="mdi mdi-cog" style="margin-right: 0.5rem;"></i>Admin
                         </a>
                     </li>
                 </ul>
             </div>
         </nav>
 
-        <!-- CONTENT WRAPPER -->
+        <!-- PAGE WRAPPER -->
         <div class="container-fluid page-body-wrapper">
             <!-- SIDEBAR -->
             <nav class="sidebar sidebar-offcanvas" id="sidebar">
                 <ul class="nav">
-                    <li class="nav-item nav-category">Menu</li>
+                    <li class="nav-item nav-category" style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em;">
+                        Principal
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link" href="/">
@@ -63,7 +120,9 @@
                         </a>
                     </li>
 
-                    <li class="nav-item nav-category">Sistema</li>
+                    <li class="nav-item nav-category" style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1rem;">
+                        Sistema
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link" href="/api">
@@ -75,29 +134,30 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/admin">
                             <i class="menu-icon mdi mdi-cog"></i>
-                            <span class="menu-title">Administración</span>
+                            <span class="menu-title">Admin</span>
                         </a>
                     </li>
 
-                    <li class="nav-item nav-category">Información</li>
+                    <li class="nav-item nav-category" style="padding: 1rem 1.5rem; font-size: 0.75rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1rem;">
+                        Cultivos
+                    </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#cultivos" aria-expanded="false" aria-controls="cultivos">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#cultivos-menu" aria-expanded="false">
                             <i class="menu-icon mdi mdi-leaf"></i>
-                            <span class="menu-title">Cultivos</span>
+                            <span class="menu-title">Disponibles</span>
                             <i class="menu-arrow"></i>
                         </a>
-                        <div class="collapse" id="cultivos">
+                        <div class="collapse" id="cultivos-menu">
                             <ul class="nav flex-column sub-menu">
-                                <li class="nav-item"><a class="nav-link" href="#">Maíz <code>maiz</code></a></li>
-                                <li class="nav-item"><a class="nav-link" href="#">Trigo <code>trigo</code></a></li>
-                                <li class="nav-item"><a class="nav-link" href="#">Soja <code>soja</code></a></li>
-                                <li class="nav-item"><a class="nav-link" href="#">Girasol <code>girasol</code></a></li>
-                                <li class="nav-item"><a class="nav-link" href="#">Cebada <code>cebada</code></a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">Maíz</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">Trigo</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">Soja</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">Girasol</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">Cebada</a></li>
                             </ul>
                         </div>
                     </li>
-
                 </ul>
             </nav>
 
@@ -107,15 +167,16 @@
                     {% block content %}{% endblock %}
                 </div>
 
-                <footer class="footer">
-                    <div class="text-center">
-                        <span class="text-muted">Crop Detection System © 2024</span>
-                    </div>
+                <footer class="footer" style="border-top: 1px solid #e5e7eb; padding: 2rem; text-align: center;">
+                    <p class="text-muted" style="margin: 0; font-size: 0.9rem;">
+                        © 2024 Crop Detection System - Microservicio de detección de cultivos
+                    </p>
                 </footer>
             </div>
         </div>
     </div>
 
+    <!-- Vendors JS -->
     <script src="{% static 'vendors/js/vendor.bundle.base.js' %}"></script>
     <script src="{% static 'js/off-canvas.js' %}"></script>
     <script src="{% static 'js/template.js' %}"></script>

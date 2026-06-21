@@ -1,145 +1,198 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Detección de Cultivos{% endblock %}
+{% block title %}Crop Detection - Análisis de Cultivos{% endblock %}
 
 {% block content %}
-<div class="content-wrapper py-4 px-3">
+<div class="content-wrapper" style="padding: 2rem 1rem;">
     <div class="container-fluid">
 
-        <!-- HEADER -->
+        <!-- PAGE HEADER -->
         <div class="mb-5">
-            <h1 class="display-6 fw-bold mb-2">
-                <i class="mdi mdi-leaf text-success"></i> Detección de Cultivos
-            </h1>
-            <p class="text-muted lead">Sube una imagen y obtén análisis automático del cultivo y conteo de plantas</p>
+            <h2 class="fw-bold mb-2" style="color: #1f2937;">
+                <i class="mdi mdi-leaf" style="color: #15803d; margin-right: 0.5rem;"></i>
+                Análisis de Cultivos
+            </h2>
+            <p class="text-muted" style="margin: 0;">
+                Sube una imagen para obtener identificación automática del cultivo y conteo de plantas
+            </p>
         </div>
 
-        <!-- MAIN CARD -->
+        <!-- MAIN CONTAINER -->
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card border-0 shadow">
-                    <div class="card-body p-5">
+            <div class="col-lg-6">
 
-                        <!-- UPLOAD SECTION -->
-                        <div id="upload-section">
-                            <h4 class="mb-4">
-                                <i class="mdi mdi-upload text-success me-2"></i>Cargar imagen
-                            </h4>
+                <!-- UPLOAD CARD -->
+                <div class="card mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-4" style="color: #1f2937;">
+                            <i class="mdi mdi-upload" style="color: #15803d; margin-right: 0.5rem;"></i>
+                            Cargar imagen
+                        </h5>
 
-                            <form id="upload-form" enctype="multipart/form-data">
-                                <div class="form-group mb-4">
-                                    <div class="border-2 border-dashed rounded p-5 text-center"
-                                         id="drop-zone"
-                                         style="border-color: #15803d; cursor: pointer; transition: all 0.3s;">
-                                        <i class="mdi mdi-cloud-upload text-success" style="font-size: 3rem;"></i>
-                                        <p class="text-muted mt-3 mb-0">
-                                            <strong>Arrastra una imagen aquí</strong><br>
-                                            o haz clic para seleccionar
-                                        </p>
-                                        <input type="file" id="imagen" name="imagen" accept="image/*"
-                                               style="display: none;" required>
-                                    </div>
-                                </div>
-
-                                <button type="submit" class="btn btn-success btn-lg w-100" id="submit-btn">
-                                    <i class="mdi mdi-play me-2"></i>Analizar imagen
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- LOADING STATE -->
-                        <div id="loading-section" style="display: none;" class="text-center py-5">
-                            <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;">
-                                <span class="visually-hidden">Analizando...</span>
+                        <form id="upload-form" enctype="multipart/form-data">
+                            <!-- Drop Zone -->
+                            <div id="drop-zone" style="
+                                border: 2px dashed #d1d5db;
+                                border-radius: 0.5rem;
+                                padding: 3rem 2rem;
+                                text-align: center;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                                background-color: #fafafa;
+                            ">
+                                <i class="mdi mdi-cloud-upload" style="
+                                    font-size: 3rem;
+                                    color: #15803d;
+                                    display: block;
+                                    margin-bottom: 1rem;
+                                "></i>
+                                <p class="fw-bold" style="color: #1f2937; margin-bottom: 0.25rem;">
+                                    Arrastra una imagen aquí
+                                </p>
+                                <p class="text-muted small" style="margin: 0;">
+                                    o haz clic para seleccionar
+                                </p>
+                                <input type="file" id="imagen" name="imagen" accept="image/*" style="display: none;" required>
                             </div>
-                            <p class="text-muted">Analizando imagen...</p>
-                        </div>
 
-                        <!-- RESULTS SECTION -->
-                        <div id="results-section" style="display: none;">
-                            <h4 class="mb-4">
-                                <i class="mdi mdi-check-circle text-success me-2"></i>Resultados
-                            </h4>
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-success w-100 mt-4" id="submit-btn" style="
+                                padding: 0.75rem;
+                                font-weight: 600;
+                                font-size: 1rem;
+                            ">
+                                <i class="mdi mdi-play" style="margin-right: 0.5rem;"></i>
+                                Analizar imagen
+                            </button>
+                        </form>
+                    </div>
+                </div>
 
-                            <!-- Image Preview -->
-                            <div class="mb-4">
-                                <img id="preview-img" src="" alt="Preview" class="img-fluid rounded" style="max-height: 300px; width: 100%; object-fit: cover;">
-                            </div>
+                <!-- LOADING STATE -->
+                <div id="loading-section" style="display: none; text-align: center; padding: 3rem;">
+                    <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;" role="status">
+                        <span class="visually-hidden">Analizando...</span>
+                    </div>
+                    <p class="text-muted fw-bold">Analizando imagen...</p>
+                </div>
+
+                <!-- RESULTS CARD -->
+                <div id="results-section" style="display: none;">
+                    <!-- Image Preview -->
+                    <div class="card mb-4 overflow-hidden">
+                        <img id="preview-img" src="" alt="Preview" style="width: 100%; height: 300px; object-fit: cover;">
+                    </div>
+
+                    <!-- Results -->
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-4" style="color: #1f2937;">
+                                <i class="mdi mdi-check-circle" style="color: #15803d; margin-right: 0.5rem;"></i>
+                                Resultados
+                            </h5>
 
                             <!-- Results Grid -->
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-3">
-                                    <div class="p-3 rounded" style="background: #f0fdf4; border-left: 4px solid #15803d;">
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <div style="
+                                        background: #f0fdf4;
+                                        border-left: 4px solid #15803d;
+                                        padding: 1rem;
+                                        border-radius: 0.5rem;
+                                    ">
                                         <p class="text-muted small mb-1">Cultivo identificado</p>
-                                        <h3 id="cultivo-result" class="text-success fw-bold mb-0">--</h3>
+                                        <h4 id="cultivo-result" class="fw-bold mb-0" style="color: #15803d;">--</h4>
                                     </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="p-3 rounded" style="background: #fef3c7; border-left: 4px solid #d97706;">
+                                <div class="col-6">
+                                    <div style="
+                                        background: #fef3c7;
+                                        border-left: 4px solid #d97706;
+                                        padding: 1rem;
+                                        border-radius: 0.5rem;
+                                    ">
                                         <p class="text-muted small mb-1">Confianza</p>
-                                        <h3 id="confianza-result" class="text-warning fw-bold mb-0">--</h3>
+                                        <h4 id="confianza-result" class="fw-bold mb-0" style="color: #d97706;">--</h4>
                                     </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="p-3 rounded" style="background: #dbeafe; border-left: 4px solid #0369a1;">
+                                <div class="col-6">
+                                    <div style="
+                                        background: #dbeafe;
+                                        border-left: 4px solid #0369a1;
+                                        padding: 1rem;
+                                        border-radius: 0.5rem;
+                                    ">
                                         <p class="text-muted small mb-1">Plantas detectadas</p>
-                                        <h3 id="plantas-result" class="text-info fw-bold mb-0">--</h3>
+                                        <h4 id="plantas-result" class="fw-bold mb-0" style="color: #0369a1;">--</h4>
                                     </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="p-3 rounded" style="background: #f3e8ff; border-left: 4px solid #7c3aed;">
-                                        <p class="text-muted small mb-1">Fecha de análisis</p>
-                                        <p id="fecha-result" class="text-muted mb-0">--</p>
+                                <div class="col-6">
+                                    <div style="
+                                        background: #f3e8ff;
+                                        border-left: 4px solid #7c3aed;
+                                        padding: 1rem;
+                                        border-radius: 0.5rem;
+                                    ">
+                                        <p class="text-muted small mb-1">Fecha análisis</p>
+                                        <p id="fecha-result" class="text-muted small mb-0">--</p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Back Button -->
                             <button class="btn btn-outline-secondary w-100" id="back-btn">
-                                <i class="mdi mdi-arrow-left me-2"></i>Analizar otra imagen
+                                <i class="mdi mdi-arrow-left" style="margin-right: 0.5rem;"></i>
+                                Analizar otra imagen
                             </button>
                         </div>
-
                     </div>
                 </div>
+
             </div>
-        </div>
 
-        <!-- INFO CARDS -->
-        <div class="row justify-content-center mt-5">
-            <div class="col-md-8">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <i class="mdi mdi-leaf text-success me-2"></i>Cultivos disponibles
-                                </h5>
-                                <ul class="list-unstyled small">
-                                    <li class="mb-2"><strong>Maíz</strong> <code>maiz</code></li>
-                                    <li class="mb-2"><strong>Trigo</strong> <code>trigo</code></li>
-                                    <li class="mb-2"><strong>Soja</strong> <code>soja</code></li>
-                                    <li class="mb-2"><strong>Girasol</strong> <code>girasol</code></li>
-                                    <li><strong>Cebada</strong> <code>cebada</code></li>
-                                </ul>
-                            </div>
-                        </div>
+            <!-- SIDEBAR INFO -->
+            <div class="col-lg-4 ms-lg-4">
+                <!-- Cultivos Card -->
+                <div class="card mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-3" style="color: #1f2937;">
+                            <i class="mdi mdi-leaf" style="color: #15803d; margin-right: 0.5rem;"></i>
+                            Cultivos soportados
+                        </h5>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2"><strong>Maíz</strong> <code style="background: #f3e8ff; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.8rem;">maiz</code></li>
+                            <li class="mb-2"><strong>Trigo</strong> <code style="background: #fef3c7; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.8rem;">trigo</code></li>
+                            <li class="mb-2"><strong>Soja</strong> <code style="background: #dbeafe; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.8rem;">soja</code></li>
+                            <li class="mb-2"><strong>Girasol</strong> <code style="background: #fecaca; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.8rem;">girasol</code></li>
+                            <li><strong>Cebada</strong> <code style="background: #e9d5ff; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.8rem;">cebada</code></li>
+                        </ul>
                     </div>
+                </div>
 
-                    <div class="col-md-6 mb-3">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <i class="mdi mdi-api text-info me-2"></i>API REST
-                                </h5>
-                                <p class="text-muted small mb-2">Accede a los análisis vía API:</p>
-                                <code class="small d-block p-2 rounded" style="background: #f5f5f5;">POST /api/analisis/</code>
-                                <a href="/api" class="btn btn-sm btn-outline-info mt-3 w-100">
-                                    <i class="mdi mdi-code-json me-1"></i>Ver documentación
-                                </a>
-                            </div>
-                        </div>
+                <!-- API Card -->
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-3" style="color: #1f2937;">
+                            <i class="mdi mdi-api" style="color: #0369a1; margin-right: 0.5rem;"></i>
+                            API REST
+                        </h5>
+                        <p class="text-muted small mb-3">
+                            Accede a los análisis programáticamente:
+                        </p>
+                        <code style="
+                            display: block;
+                            background: #f5f5f5;
+                            padding: 0.75rem;
+                            border-radius: 0.5rem;
+                            font-size: 0.85rem;
+                            margin-bottom: 1rem;
+                            border-left: 3px solid #0369a1;
+                        ">POST /api/analisis/</code>
+                        <a href="/api" class="btn btn-outline-info btn-sm w-100">
+                            <i class="mdi mdi-code-json" style="margin-right: 0.25rem;"></i>
+                            Ver documentación
+                        </a>
                     </div>
                 </div>
             </div>
@@ -149,10 +202,20 @@
 </div>
 
 <script>
-// Drag & Drop
+// ─────────────────────────────────────────────────────────────
+// UI ELEMENTS
+// ─────────────────────────────────────────────────────────────
 const dropZone = document.getElementById('drop-zone');
 const inputFile = document.getElementById('imagen');
+const uploadForm = document.getElementById('upload-form');
+const uploadSection = document.getElementById('upload-section') || uploadForm.parentElement;
+const loadingSection = document.getElementById('loading-section');
+const resultsSection = document.getElementById('results-section');
+const backBtn = document.getElementById('back-btn');
 
+// ─────────────────────────────────────────────────────────────
+// DRAG & DROP
+// ─────────────────────────────────────────────────────────────
 dropZone.addEventListener('click', () => inputFile.click());
 
 dropZone.addEventListener('dragover', (e) => {
@@ -162,36 +225,36 @@ dropZone.addEventListener('dragover', (e) => {
 });
 
 dropZone.addEventListener('dragleave', () => {
-    dropZone.style.backgroundColor = 'transparent';
-    dropZone.style.borderColor = '#15803d';
+    dropZone.style.backgroundColor = '#fafafa';
+    dropZone.style.borderColor = '#d1d5db';
 });
 
 dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-        inputFile.files = files;
+    if (e.dataTransfer.files.length > 0) {
+        inputFile.files = e.dataTransfer.files;
     }
 });
 
-// Form Submit
-document.getElementById('upload-form').addEventListener('submit', async (e) => {
+// ─────────────────────────────────────────────────────────────
+// UPLOAD & ANALYZE
+// ─────────────────────────────────────────────────────────────
+uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    const imagen = document.getElementById('imagen').files[0];
-
+    const imagen = inputFile.files[0];
     if (!imagen) {
         alert('Por favor selecciona una imagen');
         return;
     }
 
+    const formData = new FormData();
     formData.append('imagen', imagen);
 
-    // Show loading
-    document.getElementById('upload-section').style.display = 'none';
-    document.getElementById('loading-section').style.display = 'block';
-    document.getElementById('results-section').style.display = 'none';
+    // Show loading state
+    uploadForm.parentElement.style.display = 'none';
+    loadingSection.style.display = 'block';
+    resultsSection.style.display = 'none';
 
     try {
         const response = await fetch('/api/analisis/', {
@@ -201,7 +264,7 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
 
         const data = await response.json();
 
-        if (response.ok) {
+        if (response.ok && data.id) {
             // Show preview
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -213,31 +276,33 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
             document.getElementById('cultivo-result').textContent =
                 data.tipo_cultivo?.nombre || 'No identificado';
             document.getElementById('confianza-result').textContent =
-                parseFloat(data.confianza).toFixed(2) + '%';
+                parseFloat(data.confianza).toFixed(1) + '%';
             document.getElementById('plantas-result').textContent =
                 data.cantidad_plantas || '--';
             document.getElementById('fecha-result').textContent =
                 new Date(data.fecha_carga).toLocaleString('es-ES');
 
-            document.getElementById('loading-section').style.display = 'none';
-            document.getElementById('results-section').style.display = 'block';
+            loadingSection.style.display = 'none';
+            resultsSection.style.display = 'block';
         } else {
             alert('Error: ' + (data.error || 'Error desconocido'));
-            document.getElementById('loading-section').style.display = 'none';
-            document.getElementById('upload-section').style.display = 'block';
+            loadingSection.style.display = 'none';
+            uploadForm.parentElement.style.display = 'block';
         }
     } catch (error) {
         alert('Error de conexión: ' + error.message);
-        document.getElementById('loading-section').style.display = 'none';
-        document.getElementById('upload-section').style.display = 'block';
+        loadingSection.style.display = 'none';
+        uploadForm.parentElement.style.display = 'block';
     }
 });
 
-// Back button
-document.getElementById('back-btn').addEventListener('click', () => {
-    document.getElementById('imagen').value = '';
-    document.getElementById('upload-section').style.display = 'block';
-    document.getElementById('results-section').style.display = 'none';
+// ─────────────────────────────────────────────────────────────
+// BACK TO UPLOAD
+// ─────────────────────────────────────────────────────────────
+backBtn.addEventListener('click', () => {
+    inputFile.value = '';
+    uploadForm.parentElement.style.display = 'block';
+    resultsSection.style.display = 'none';
 });
 </script>
 {% endblock %}
