@@ -1,235 +1,243 @@
-{% extends 'base.html' %}
-{% load i18n %}
+{% extends "base.html" %}
+{% load static %}
 
-{% block plugin_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-{% endblock %}
+{% block title %}Detección de Cultivos{% endblock %}
 
 {% block content %}
-<div class="content-wrapper py-3 px-3">
+<div class="content-wrapper py-4 px-3">
+    <div class="container-fluid">
 
-  <!-- HEADER -->
-  <div class="d-flex align-items-center justify-content-between mb-4">
-    <div>
-      <h1 class="page-title mb-0">
-        <i class="mdi mdi-leaf me-2"></i>Detección de Cultivos
-      </h1>
-      <p class="text-muted small mt-1">Análisis automático de imágenes agrícolas</p>
-    </div>
-  </div>
-
-  <!-- KPI CARDS -->
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body text-center py-3">
-          <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
-               style="width:38px;height:38px;background:#dcfce7">
-            <i class="mdi mdi-image-multiple" style="font-size:1.15rem;color:#15803d"></i>
-          </div>
-          <div class="text-muted fw-semibold text-uppercase" style="font-size:.68rem;letter-spacing:.06em">Análisis</div>
-          <div class="fw-bold mt-1" style="font-size:1.3rem;color:#15803d">--</div>
-          <div class="text-muted" style="font-size:.68rem">realizados</div>
+        <!-- HEADER -->
+        <div class="mb-5">
+            <h1 class="display-6 fw-bold mb-2">
+                <i class="mdi mdi-leaf text-success"></i> Detección de Cultivos
+            </h1>
+            <p class="text-muted lead">Sube una imagen y obtén análisis automático del cultivo y conteo de plantas</p>
         </div>
-      </div>
-    </div>
 
-    <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body text-center py-3">
-          <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
-               style="width:38px;height:38px;background:#e0f2fe">
-            <i class="mdi mdi-leaf" style="font-size:1.15rem;color:#0369a1"></i>
-          </div>
-          <div class="text-muted fw-semibold text-uppercase" style="font-size:.68rem;letter-spacing:.06em">Cultivos</div>
-          <div class="fw-bold mt-1" style="font-size:1.3rem;color:#0369a1">5</div>
-          <div class="text-muted" style="font-size:.68rem">disponibles</div>
-        </div>
-      </div>
-    </div>
+        <!-- MAIN CARD -->
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-5">
 
-    <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body text-center py-3">
-          <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
-               style="width:38px;height:38px;background:#fef3c7">
-            <i class="mdi mdi-sprout" style="font-size:1.15rem;color:#d97706"></i>
-          </div>
-          <div class="text-muted fw-semibold text-uppercase" style="font-size:.68rem;letter-spacing:.06em">Plantas</div>
-          <div class="fw-bold mt-1" style="font-size:1.3rem;color:#d97706">--</div>
-          <div class="text-muted" style="font-size:.68rem">detectadas</div>
-        </div>
-      </div>
-    </div>
+                        <!-- UPLOAD SECTION -->
+                        <div id="upload-section">
+                            <h4 class="mb-4">
+                                <i class="mdi mdi-upload text-success me-2"></i>Cargar imagen
+                            </h4>
 
-    <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body text-center py-3">
-          <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
-               style="width:38px;height:38px;background:#f0fdf4">
-            <i class="mdi mdi-target" style="font-size:1.15rem;color:#15803d"></i>
-          </div>
-          <div class="text-muted fw-semibold text-uppercase" style="font-size:.68rem;letter-spacing:.06em">Precisión</div>
-          <div class="fw-bold mt-1" style="font-size:1.3rem;color:#15803d">--</div>
-          <div class="text-muted" style="font-size:.68rem">promedio</div>
-        </div>
-      </div>
-    </div>
-  </div>
+                            <form id="upload-form" enctype="multipart/form-data">
+                                <div class="form-group mb-4">
+                                    <div class="border-2 border-dashed rounded p-5 text-center"
+                                         id="drop-zone"
+                                         style="border-color: #15803d; cursor: pointer; transition: all 0.3s;">
+                                        <i class="mdi mdi-cloud-upload text-success" style="font-size: 3rem;"></i>
+                                        <p class="text-muted mt-3 mb-0">
+                                            <strong>Arrastra una imagen aquí</strong><br>
+                                            o haz clic para seleccionar
+                                        </p>
+                                        <input type="file" id="imagen" name="imagen" accept="image/*"
+                                               style="display: none;" required>
+                                    </div>
+                                </div>
 
-  <!-- MAIN CONTENT -->
-  <div class="row g-3">
-    <!-- LEFT COLUMN -->
-    <div class="col-md-8">
-      <!-- UPLOAD CARD -->
-      <div class="card border-0 shadow-sm mb-3">
-        <div class="card-header bg-white border-0 pb-2">
-          <h5 class="card-title mb-0">
-            <i class="mdi mdi-upload me-2 text-success"></i>Cargar imagen para análisis
-          </h5>
-        </div>
-        <div class="card-body">
-          <div class="alert alert-info" role="alert">
-            <i class="mdi mdi-information-outline me-2"></i>
-            <strong>Instrucciones:</strong> Sube una foto de tu cultivo. El sistema identificará automáticamente el tipo y contará las plantas.
-          </div>
+                                <button type="submit" class="btn btn-success btn-lg w-100" id="submit-btn">
+                                    <i class="mdi mdi-play me-2"></i>Analizar imagen
+                                </button>
+                            </form>
+                        </div>
 
-          <form id="upload-form" enctype="multipart/form-data">
-            <div class="form-group">
-              <label class="form-label">Selecciona una imagen</label>
-              <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*" required>
-              <small class="form-text text-muted">PNG, JPG, JPEG (máx. 50MB)</small>
+                        <!-- LOADING STATE -->
+                        <div id="loading-section" style="display: none;" class="text-center py-5">
+                            <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;">
+                                <span class="visually-hidden">Analizando...</span>
+                            </div>
+                            <p class="text-muted">Analizando imagen...</p>
+                        </div>
+
+                        <!-- RESULTS SECTION -->
+                        <div id="results-section" style="display: none;">
+                            <h4 class="mb-4">
+                                <i class="mdi mdi-check-circle text-success me-2"></i>Resultados
+                            </h4>
+
+                            <!-- Image Preview -->
+                            <div class="mb-4">
+                                <img id="preview-img" src="" alt="Preview" class="img-fluid rounded" style="max-height: 300px; width: 100%; object-fit: cover;">
+                            </div>
+
+                            <!-- Results Grid -->
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <div class="p-3 rounded" style="background: #f0fdf4; border-left: 4px solid #15803d;">
+                                        <p class="text-muted small mb-1">Cultivo identificado</p>
+                                        <h3 id="cultivo-result" class="text-success fw-bold mb-0">--</h3>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="p-3 rounded" style="background: #fef3c7; border-left: 4px solid #d97706;">
+                                        <p class="text-muted small mb-1">Confianza</p>
+                                        <h3 id="confianza-result" class="text-warning fw-bold mb-0">--</h3>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="p-3 rounded" style="background: #dbeafe; border-left: 4px solid #0369a1;">
+                                        <p class="text-muted small mb-1">Plantas detectadas</p>
+                                        <h3 id="plantas-result" class="text-info fw-bold mb-0">--</h3>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="p-3 rounded" style="background: #f3e8ff; border-left: 4px solid #7c3aed;">
+                                        <p class="text-muted small mb-1">Fecha de análisis</p>
+                                        <p id="fecha-result" class="text-muted mb-0">--</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Back Button -->
+                            <button class="btn btn-outline-secondary w-100" id="back-btn">
+                                <i class="mdi mdi-arrow-left me-2"></i>Analizar otra imagen
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="btn btn-success w-100">
-              <i class="mdi mdi-upload me-2"></i>Analizar imagen
-            </button>
-          </form>
+        </div>
 
-          <div id="loading" class="text-center mt-3" style="display:none;">
-            <div class="spinner-border text-success" role="status">
-              <span class="visually-hidden">Analizando...</span>
-            </div>
-            <p class="text-muted mt-2">Analizando imagen...</p>
-          </div>
-        </div>
-      </div>
+        <!-- INFO CARDS -->
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="mdi mdi-leaf text-success me-2"></i>Cultivos disponibles
+                                </h5>
+                                <ul class="list-unstyled small">
+                                    <li class="mb-2"><strong>Maíz</strong> <code>maiz</code></li>
+                                    <li class="mb-2"><strong>Trigo</strong> <code>trigo</code></li>
+                                    <li class="mb-2"><strong>Soja</strong> <code>soja</code></li>
+                                    <li class="mb-2"><strong>Girasol</strong> <code>girasol</code></li>
+                                    <li><strong>Cebada</strong> <code>cebada</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
 
-      <!-- RESULTADOS CARD -->
-      <div class="card border-0 shadow-sm" id="results-card" style="display:none;">
-        <div class="card-header bg-white border-0 pb-2">
-          <h5 class="card-title mb-0">
-            <i class="mdi mdi-check-circle me-2 text-success"></i>Resultados del análisis
-          </h5>
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="mdi mdi-api text-info me-2"></i>API REST
+                                </h5>
+                                <p class="text-muted small mb-2">Accede a los análisis vía API:</p>
+                                <code class="small d-block p-2 rounded" style="background: #f5f5f5;">POST /api/analisis/</code>
+                                <a href="/api" class="btn btn-sm btn-outline-info mt-3 w-100">
+                                    <i class="mdi mdi-code-json me-1"></i>Ver documentación
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6">
-              <p class="text-muted small">Cultivo identificado</p>
-              <h3 id="cultivo-result" class="text-success fw-bold">--</h3>
-            </div>
-            <div class="col-md-6">
-              <p class="text-muted small">Confianza</p>
-              <h3 id="confianza-result" class="text-warning fw-bold">--</h3>
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col-md-6">
-              <p class="text-muted small">Plantas detectadas</p>
-              <h3 id="plantas-result" class="text-info fw-bold">--</h3>
-            </div>
-            <div class="col-md-6">
-              <p class="text-muted small">Fecha de análisis</p>
-              <p id="fecha-result" class="text-muted">--</p>
-            </div>
-          </div>
-        </div>
-      </div>
+
     </div>
-
-    <!-- RIGHT COLUMN -->
-    <div class="col-md-4">
-      <!-- INFO CARD -->
-      <div class="card border-0 shadow-sm mb-3">
-        <div class="card-header bg-white border-0 pb-2">
-          <h5 class="card-title mb-0">
-            <i class="mdi mdi-information-outline me-2"></i>Cultivos disponibles
-          </h5>
-        </div>
-        <div class="card-body p-2">
-          <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action small">
-              <strong>Maíz</strong> <code>maiz</code>
-            </a>
-            <a href="#" class="list-group-item list-group-item-action small">
-              <strong>Trigo</strong> <code>trigo</code>
-            </a>
-            <a href="#" class="list-group-item list-group-item-action small">
-              <strong>Soja</strong> <code>soja</code>
-            </a>
-            <a href="#" class="list-group-item list-group-item-action small">
-              <strong>Girasol</strong> <code>girasol</code>
-            </a>
-            <a href="#" class="list-group-item list-group-item-action small">
-              <strong>Cebada</strong> <code>cebada</code>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- API CARD -->
-      <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white border-0 pb-2">
-          <h5 class="card-title mb-0">
-            <i class="mdi mdi-api me-2"></i>API REST
-          </h5>
-        </div>
-        <div class="card-body">
-          <p class="small text-muted mb-2">Accede a través de:</p>
-          <code class="small d-block mb-2" style="background:#f5f5f5;padding:8px;border-radius:4px;">/api/analisis/</code>
-          <a href="/api" class="btn btn-sm btn-outline-secondary w-100">
-            <i class="mdi mdi-code-json me-1"></i>Ver API
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
 <script>
-document.getElementById('upload-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
+// Drag & Drop
+const dropZone = document.getElementById('drop-zone');
+const inputFile = document.getElementById('imagen');
 
-  const formData = new FormData();
-  const imagen = document.getElementById('imagen').files[0];
-  formData.append('imagen', imagen);
+dropZone.addEventListener('click', () => inputFile.click());
 
-  document.getElementById('loading').style.display = 'block';
-  document.getElementById('results-card').style.display = 'none';
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.style.backgroundColor = '#f0fdf4';
+    dropZone.style.borderColor = '#15803d';
+});
 
-  try {
-    const response = await fetch('/api/analisis/', {
-      method: 'POST',
-      body: formData
-    });
+dropZone.addEventListener('dragleave', () => {
+    dropZone.style.backgroundColor = 'transparent';
+    dropZone.style.borderColor = '#15803d';
+});
 
-    const data = await response.json();
-
-    if (response.ok) {
-      document.getElementById('cultivo-result').textContent = data.tipo_cultivo?.nombre || 'No identificado';
-      document.getElementById('confianza-result').textContent = data.confianza.toFixed(2) + '%';
-      document.getElementById('plantas-result').textContent = data.cantidad_plantas || '--';
-      document.getElementById('fecha-result').textContent = new Date(data.fecha_carga).toLocaleString('es-ES');
-
-      document.getElementById('results-card').style.display = 'block';
-    } else {
-      alert('Error en el análisis: ' + (data.error || 'Error desconocido'));
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        inputFile.files = files;
     }
-  } catch (error) {
-    alert('Error en la conexión: ' + error.message);
-  } finally {
-    document.getElementById('loading').style.display = 'none';
-  }
+});
+
+// Form Submit
+document.getElementById('upload-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    const imagen = document.getElementById('imagen').files[0];
+
+    if (!imagen) {
+        alert('Por favor selecciona una imagen');
+        return;
+    }
+
+    formData.append('imagen', imagen);
+
+    // Show loading
+    document.getElementById('upload-section').style.display = 'none';
+    document.getElementById('loading-section').style.display = 'block';
+    document.getElementById('results-section').style.display = 'none';
+
+    try {
+        const response = await fetch('/api/analisis/', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('preview-img').src = e.target.result;
+            };
+            reader.readAsDataURL(imagen);
+
+            // Display results
+            document.getElementById('cultivo-result').textContent =
+                data.tipo_cultivo?.nombre || 'No identificado';
+            document.getElementById('confianza-result').textContent =
+                parseFloat(data.confianza).toFixed(2) + '%';
+            document.getElementById('plantas-result').textContent =
+                data.cantidad_plantas || '--';
+            document.getElementById('fecha-result').textContent =
+                new Date(data.fecha_carga).toLocaleString('es-ES');
+
+            document.getElementById('loading-section').style.display = 'none';
+            document.getElementById('results-section').style.display = 'block';
+        } else {
+            alert('Error: ' + (data.error || 'Error desconocido'));
+            document.getElementById('loading-section').style.display = 'none';
+            document.getElementById('upload-section').style.display = 'block';
+        }
+    } catch (error) {
+        alert('Error de conexión: ' + error.message);
+        document.getElementById('loading-section').style.display = 'none';
+        document.getElementById('upload-section').style.display = 'block';
+    }
+});
+
+// Back button
+document.getElementById('back-btn').addEventListener('click', () => {
+    document.getElementById('imagen').value = '';
+    document.getElementById('upload-section').style.display = 'block';
+    document.getElementById('results-section').style.display = 'none';
 });
 </script>
 {% endblock %}
