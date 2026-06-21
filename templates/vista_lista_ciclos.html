@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block plugin_css %}
+<style>
+    .table thead th {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #4b5563;
+        white-space: nowrap;
+    }
+
+    .badge-estado-activo {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.45rem 0.7rem;
+        border-radius: 50rem;
+        background-color: rgba(40, 167, 69, 0.12);
+        color: #2e7d32;
+        border: 1px solid rgba(40, 167, 69, 0.25);
+        font-weight: 600;
+    }
+
+    .badge-estado-cerrado {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.45rem 0.7rem;
+        border-radius: 50rem;
+        background-color: rgba(108, 117, 125, 0.12);
+        color: #5f6b73;
+        border: 1px solid rgba(108, 117, 125, 0.25);
+        font-weight: 600;
+    }
+
+    .btn-ver-ciclo {
+        border-radius: 50rem;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show d-flex align-items-center" role="alert">
+            <i class="mdi 
+                {% if 'success' in message.tags %}mdi-check-circle
+                {% elif 'danger' in message.tags %}mdi-alert-circle
+                {% elif 'warning' in message.tags %}mdi-alert
+                {% else %}mdi-information{% endif %}
+                me-2"></i>
+
+            <div>{{ message }}</div>
+
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="upload-card">
+        <div class="upload-header d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
+            <div>
+                <h3 class="mb-1">
+                    <i class="mdi mdi-sprout-outline icon-agro me-1"></i>
+                    {% translate "Lotes Productivos" %}
+                </h3>
+                <div class="small text-muted">
+                    <h6 class="mb-1 mt-2">
+                        {% translate "Gestión de lotes productivos" %}
+                    </h6>
+                </div>
+            </div>
+
+            <div>
+                <a href="{% url 'vista_crear_ciclo' %}" class="btn btn-success">
+                    <i class="mdi mdi-plus-circle-outline me-2"></i>
+                    {% translate "Nuevo ciclo" %}
+                </a>
+            </div>
+        </div>
+
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <form id="form-filtros-ciclos" class="mb-4">
+                        <div class="row align-items-end g-3">
+                            <div class="col-md-6 col-lg-3">
+                                <label for="{{ form.campana.id_for_label }}" class="form-label">
+                                    {{ form.campana.label }}
+                                </label>
+                                {{ form.campana }}
+                            </div>
+
+                            <div class="col-md-6 col-lg-3">
+                                <label for="{{ form.campo.id_for_label }}" class="form-label">
+                                    {{ form.campo.label }}
+                                </label>
+                                {{ form.campo }}
+                            </div>
+
+                            <div class="col-md-6 col-lg-3">
+                                <label for="{{ form.cultivo.id_for_label }}" class="form-label">
+                                    {{ form.cultivo.label }}
+                                </label>
+                                {{ form.cultivo }}
+                            </div>
+
+                            <div class="col-md-6 col-lg-3">
+                                <label for="{{ form.estado.id_for_label }}" class="form-label">
+                                    {{ form.estado.label }}
+                                </label>
+                                {{ form.estado }}
+                            </div>
+                        </div>
+                        <div class="text-end mt-2">
+                            <a href="#" id="btn-limpiar-filtros" class="small text-danger text-decoration-none">
+                                <i class="mdi mdi-filter-remove-outline me-1"></i>
+                                {% translate "Limpiar filtros" %}
+                            </a>
+                        </div>
+                    </form>
+
+                    <div id="contenedor-tabla-ciclos">
+                        <div class="table-responsive">
+                            <table class="table table-striped align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>{% translate "Campo" %}</th>
+                                        <th>{% translate "Campaña" %}</th>
+                                        <th>{% translate "Lote" %}</th>
+                                        <th>{% translate "Cultivo" %}</th>
+                                        <th>{% translate "Superficie (ha)" %}</th>
+                                        <th>{% translate "Inicio" %}</th>
+                                        <th>{% translate "Estado" %}</th>
+                                        <th class="text-center">{% translate "Acciones" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla_ciclos">
+                                    {% for ciclo in ciclos %}
+                                    <tr id="ciclo-row-{{ ciclo.id }}">
+                                        <td>{{ ciclo.campo.nombre }}</td>
+                                        <td>{{ ciclo.campana }}</td>
+                                        <td>{{ ciclo.nombre_lote }}</td>
+                                        <td>{{ ciclo.cultivo }}</td>
+                                        <td>{{ ciclo.superficie_ha }}</td>
+                                        <td>{{ ciclo.fecha_inicio|date:"d/m/Y" }}</td>
+                                        <td>
+                                            {% if ciclo.fecha_fin %}
+                                                <span class="badge-estado-cerrado">
+                                                    <i class="mdi mdi-lock-outline"></i>
+                                                    {% translate "Cerrado" %}
+                                                </span>
+                                            {% else %}
+                                                <span class="badge-estado-activo">
+                                                    <i class="mdi mdi-check-circle-outline"></i>
+                                                    {% translate "Activo" %}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center" style="white-space:nowrap">
+                                            <a href="{% url 'vista_detalle_ciclo' ciclo.id %}" class="btn btn-sm btn-outline-success btn-ver-ciclo">
+                                                <i class="mdi mdi-eye-outline me-1"></i>{% translate "Ver" %}
+                                            </a>
+                                            <a href="{% url 'vista_editar_ciclo' ciclo.id %}" class="btn btn-sm btn-outline-primary ms-1">
+                                                <i class="mdi mdi-pencil-outline"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger ms-1"
+                                                    onclick="confirmarEliminarCiclo({{ ciclo.id }}, '{{ ciclo.cultivo.nombre }} – {{ ciclo.campana.nombre }}')">
+                                                <i class="mdi mdi-delete-outline"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">
+                                            {% translate "No hay ciclos agrícolas creados" %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("form-filtros-ciclos");
+    const tablaBody = document.getElementById("tabla_ciclos");
+    const filtros = form.querySelectorAll("select");
+    const btnLimpiar = document.getElementById("btn-limpiar-filtros");
+
+    function filtrarCiclosAjax() {
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+
+        fetch("{% url 'ajax_get_ciclos_data' %}?" + params.toString())
+            .then(response => response.json())
+            .then(resultado => {
+
+                tablaBody.innerHTML = "";
+
+                if (resultado.data.length === 0) {
+                    tablaBody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">
+                                No hay ciclos agrícolas creados
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                resultado.data.forEach(ciclo => {
+
+                    let badgeEstado = "";
+
+                    if (ciclo.estado === "cerrado") {
+                        badgeEstado = `
+                            <span class="badge-estado-cerrado">
+                                <i class="mdi mdi-lock-outline"></i>
+                                ${ciclo.estado_label}
+                            </span>
+                        `;
+                    } else {
+                        badgeEstado = `
+                            <span class="badge-estado-activo">
+                                <i class="mdi mdi-check-circle-outline"></i>
+                                ${ciclo.estado_label}
+                            </span>
+                        `;
+                    }
+
+                    tablaBody.innerHTML += `
+                        <tr>
+                            <td>${ciclo.campo}</td>
+                            <td>${ciclo.campana}</td>
+                            <td>${ciclo.nombre_lote}</td>
+                            <td>${ciclo.cultivo}</td>
+                            <td>${ciclo.superficie_ha}</td>
+                            <td>${ciclo.fecha_inicio}</td>
+                            <td>${badgeEstado}</td>
+                            <td class="text-center">
+                                <a href="${ciclo.detalle_url}" class="btn btn-sm btn-outline-success btn-ver-ciclo">
+                                    <i class="mdi mdi-eye-outline me-1"></i>
+                                    Ver
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+    }
+
+    filtros.forEach(filtro => {
+        filtro.addEventListener("change", filtrarCiclosAjax);
+    });
+
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener("click", function (e) {
+            e.preventDefault();
+            form.reset();
+            filtrarCiclosAjax();
+        });
+    }
+});
+
+var _cicloEliminarId = null;
+function confirmarEliminarCiclo(id, nombre) {
+    _cicloEliminarId = id;
+    document.getElementById("modal-ciclo-nombre").textContent = nombre;
+    new bootstrap.Modal(document.getElementById("modalEliminarCiclo")).show();
+}
+document.addEventListener("DOMContentLoaded", function() {
+    var btnConfirmar = document.getElementById("btn-confirmar-eliminar-ciclo");
+    if (btnConfirmar) {
+        btnConfirmar.addEventListener("click", function() {
+            if (!_cicloEliminarId) return;
+            var csrf = document.cookie.match(/csrftoken=([^;]+)/);
+            fetch("/ciclos/" + _cicloEliminarId + "/eliminar/", {
+                method: "POST",
+                headers: {"X-CSRFToken": csrf ? csrf[1] : ""},
+            }).then(r => r.json()).then(d => {
+                if (d.ok) {
+                    var row = document.getElementById("ciclo-row-" + _cicloEliminarId);
+                    if (row) row.remove();
+                    bootstrap.Modal.getInstance(document.getElementById("modalEliminarCiclo")).hide();
+                } else {
+                    alert(d.error || "Error al eliminar");
+                }
+            });
+        });
+    }
+});
+</script>
+
+<!-- Modal confirmar eliminar -->
+<div class="modal fade" id="modalEliminarCiclo" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header py-2 border-0">
+        <h6 class="modal-title text-danger"><i class="mdi mdi-alert me-1"></i>Eliminar ciclo</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-2">
+        <p class="mb-1 small">¿Eliminar el ciclo <strong id="modal-ciclo-nombre"></strong> y todas sus actividades?</p>
+        <p class="text-danger small mb-0"><i class="mdi mdi-alert-circle me-1"></i>Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer py-2 border-0">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-sm btn-danger" id="btn-confirmar-eliminar-ciclo">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

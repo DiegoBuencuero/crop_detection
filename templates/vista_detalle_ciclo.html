@@ -1,0 +1,613 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block plugin_css %}
+<link rel="stylesheet" href="{% static 'css/detalleCiclo.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">   
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show d-flex align-items-center" role="alert">
+            <i class="mdi
+                {% if 'success' in message.tags %}mdi-check-circle
+                {% elif 'danger' in message.tags %}mdi-alert-circle
+                {% elif 'warning' in message.tags %}mdi-alert
+                {% else %}mdi-information{% endif %}
+                me-2"></i>
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="upload-card">
+        <!-- ── TÍTULO ── -->
+        <div class="mb-3">
+            <h3 class="mb-1 fw-bold">
+                <i class="mdi mdi-map icon-agro me-1"></i>{{ ciclo.nombre_lote }}
+            </h3>
+            <div class="text-muted small">{{ ciclo.campo.nombre }} · {{ ciclo.campana }}</div>
+        </div>
+
+        <!-- ── 3 CARDS ── -->
+        <div class="row g-3 mb-4">
+
+            <!-- Card 1: Cultivo + datos del ciclo -->
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-baseline gap-2 mb-1">
+                            <h6 class="text-muted mb-0">{% translate "Cultivo" %}</h6>
+                            <span class="fw-bold fs-5">{{ ciclo.cultivo.nombre }}</span>
+                        </div>
+                        {% if ciclo.cultivo.variedad %}
+                            <div class="small text-muted mb-3">{{ ciclo.cultivo.variedad }}</div>
+                        {% else %}
+                            <div class="mb-3"></div>
+                        {% endif %}
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="small text-muted"><i class="mdi mdi-vector-square me-1"></i>{% translate "Superficie" %}</span>
+                            <span class="small fw-semibold">{{ ciclo.superficie_ha }} ha</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="small text-muted"><i class="mdi mdi-calendar-plus me-1"></i>{% translate "Inicio" %}</span>
+                            <span class="small fw-semibold">{{ ciclo.fecha_inicio|date:"d/m/Y" }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="small text-muted"><i class="mdi mdi-calendar-check me-1"></i>{% translate "Fin" %}</span>
+                            <span class="small fw-semibold">
+                                {% if fecha_fin_real %}{{ fecha_fin_real|date:"d/m/Y" }}{% else %}<span class="text-success">{% translate "En curso" %}</span>{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Costos -->
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">{% translate "Costos" %}</h6>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="small text-muted"><i class="mdi mdi-account-hard-hat-outline me-1"></i>{% translate "Mano de obra" %}/ha</span>
+                            <span class="small fw-semibold">R$ {{ costo_mo_ha|floatformat:0 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="small text-muted"><i class="mdi mdi-tractor me-1"></i>{% translate "Maquinaria" %}/ha</span>
+                            <span class="small fw-semibold">R$ {{ costo_maq_ha|floatformat:0 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 pb-2" style="border-bottom:1px solid #e9ecef">
+                            <span class="small text-muted"><i class="mdi mdi-flask-outline me-1"></i>{% translate "Insumos" %}/ha</span>
+                            <span class="small fw-semibold">R$ {{ costo_ins_ha|floatformat:0 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="small text-muted">{% translate "Costo/ha" %}</span>
+                            <span class="fw-bold" style="color:#374151">R$ {{ costo_ha_ciclo|floatformat:0 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="small text-muted">{% translate "Costo total" %}</span>
+                            <span class="small fw-semibold">R$ {{ costo_total_ciclo|floatformat:0 }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Economía / objetivos -->
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">{% translate "Economía" %}</h6>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="small text-muted">{% translate "Precio mercado" %}</span>
+                            <span class="small fw-semibold text-success">R$ {{ precio_saco|floatformat:0 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 pb-2" style="border-bottom:1px solid #e9ecef">
+                            <span class="small text-muted">{% translate "Punto de equilibrio" %}</span>
+                            <span class="small fw-semibold">{{ sacos_equilibrio_ha|floatformat:2 }} sc/ha</span>
+                        </div>
+                        {% if rendimiento_esperado_sacos %}
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="small text-muted">{% translate "Rend. esperado" %}</span>
+                            <span class="small fw-semibold text-success">{{ rendimiento_esperado_sacos|floatformat:1 }} sc/ha</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="{% url 'vista_lista_ciclos' %}" class="btn btn-outline-secondary">
+                <i class="mdi mdi-arrow-left me-1"></i>
+                {% translate "Volver" %}
+            </a>
+
+            {% if not ciclo.fecha_fin %}
+                <a href="{% url 'vista_agregar_actividad' id_ciclo=ciclo.id %}" class="btn btn-success">
+                    <i class="mdi mdi-plus-circle-outline me-1"></i>
+                    {% translate "Agregar actividad" %}
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-white border-0 mt-4 pb-2">
+                                    <div>
+                                        <h5 class="fw-bold mb-1">
+                                            <i class="mdi mdi-timeline-clock-outline text-success me-1"></i>
+                                            {% translate "Línea de tiempo de actividades" %}
+                                        </h5>
+                                        <p class="text-muted small mb-0">
+                                            {% translate "Historial cronológico con separación por fases" %}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="card-body">
+                                    {% if actividades %}
+                                        <div class="timeline-container">
+                                            <div class="timeline-vertical-line"></div>
+
+                                            {% regroup actividades by fase as actividades_por_fase %}
+
+                                            {% for fase_group in actividades_por_fase %}
+                                                {% with fase=fase_group.grouper %}
+
+                                                    <!-- INICIO DE FASE -->
+                                                    <div class="timeline-phase-header">
+                                                        <div class="phase-flag-icon">
+                                                            <i class="mdi mdi-flag-variant"></i>
+                                                        </div>
+
+                                                        <div class="phase-label">
+                                                            {% translate "Inicio de fase" %}
+                                                            <span class="badge badge-fase-agro">
+                                                                {{ fase.get_tipo_display|upper }}
+                                                            </span>
+                                                            <span class="phase-date">
+                                                                <i class="mdi mdi-calendar me-1"></i>
+                                                                {{ fase.fecha_inicio|date:"d/m/Y" }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- ACTIVIDADES -->
+                                                    {% for act in fase_group.list %}
+                                                        <div class="timeline-item">
+                                                            <div class="activity-icon {{ act.tipo.nombre|slugify }}">
+                                                                {% if act.tipo.nombre|lower == "siembra" %}
+                                                                    <i class="mdi mdi-sprout"></i>
+                                                                {% elif act.tipo.nombre|lower == "aplicación" or act.tipo.nombre|lower == "aplicacion" %}
+                                                                    <i class="mdi mdi-water"></i>
+                                                                {% elif act.tipo.nombre|lower == "fertilización" or act.tipo.nombre|lower == "fertilizacion" %}
+                                                                    <i class="mdi mdi-leaf"></i>
+                                                                {% elif act.tipo.nombre|lower == "cosecha" %}
+                                                                    <i class="mdi mdi-basket-fill"></i>
+                                                                {% elif act.tipo.nombre|lower == "visitoría" or act.tipo.nombre|lower == "vistoria" %}
+                                                                    <i class="mdi mdi-eye-outline"></i>
+                                                                {% else %}
+                                                                    <i class="mdi mdi-chart-line"></i>
+                                                                {% endif %}
+                                                            </div>
+
+                                                            <div class="activity-card {{ act.tipo.nombre|slugify }}" data-act-id="{{ act.id }}">
+                                                                <div
+                                                                    class="activity-header"
+                                                                    data-bs-toggle="collapse"
+                                                                    data-bs-target="#collapse{{ act.id }}"
+                                                                    role="button"
+                                                                    aria-expanded="false"
+                                                                    aria-controls="collapse{{ act.id }}"
+                                                                >
+                                                                    <div class="d-flex justify-content-between align-items-start w-100">
+                                                                        <div>
+                                                                            <div class="activity-type">
+                                                                                {{ act.tipo.nombre }}
+                                                                                {% if act.subtipo %}
+                                                                                    <span class="activity-subtype">· {{ act.subtipo.nombre }}</span>
+                                                                                {% endif %}
+                                                                            </div>
+
+                                                                            <div class="mt-1 small text-muted d-flex flex-wrap gap-3">
+                                                                                <span>
+                                                                                    <i class="mdi mdi-calendar me-1"></i>
+                                                                                    {{ act.fecha|date:"d/m/Y" }}
+                                                                                </span>
+
+                                                                                {% if act.insumos.exists %}
+                                                                                    <span>
+                                                                                        <i class="mdi mdi-cube-outline me-1"></i>
+                                                                                        {{ act.insumos.count }} {% translate "insumos" %}
+                                                                                    </span>
+                                                                                {% endif %}
+
+                                                                                {% if act.total %}
+                                                                                    <span>
+                                                                                        <i class="mdi mdi-cash me-1"></i>
+                                                                                        R$ {{ act.total|floatformat:2 }}
+                                                                                    </span>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="activity-date d-flex align-items-center gap-2">
+                                                                            <span>{{ act.fecha|date:"d/m/Y" }}</span>
+                                                                            <button class="btn btn-sm btn-outline-danger py-0 px-1 no-print"
+                                                                                    onclick="event.stopPropagation(); borrarActividad({{ act.id }})"
+                                                                                    title="Eliminar actividad">
+                                                                                <i class="mdi mdi-delete-outline" style="font-size:.8rem"></i>
+                                                                            </button>
+                                                                            <i class="mdi mdi-chevron-down"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div id="collapse{{ act.id }}" class="collapse">
+                                                                    <div class="pt-3">
+
+                                                                        {% if act.observaciones %}
+                                                                            <div class="activity-obs mb-3">
+                                                                                <strong>{% translate "Observaciones" %}:</strong>
+                                                                                {{ act.observaciones }}
+                                                                            </div>
+                                                                        {% endif %}
+
+                                                                        {% if act.cantidad_hombre %}
+                                                                            <div class="mt-3 border-top pt-3">
+                                                                                <div class="fw-bold mb-3">
+                                                                                    <i class="mdi mdi-account-hard-hat me-1 text-primary"></i>
+                                                                                    {% translate "Mano de obra" %}
+                                                                                </div>
+                                                                                <div class="table-responsive">
+                                                                                    <table class="table table-sm align-middle mb-0" style="table-layout:fixed">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th style="width:55%">{% translate "Actividad" %}</th>
+                                                                                                <th class="text-end" style="width:15%">{% translate "Cantidad" %}</th>
+                                                                                                <th class="text-end" style="width:15%">{% translate "Costo unitario" %}</th>
+                                                                                                <th class="text-end" style="width:15%">{% translate "Subtotal" %}</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                                                                                                    {{ act.tipo.nombre }}{% if act.subtipo %} · {{ act.subtipo.nombre }}{% endif %}
+                                                                                                </td>
+                                                                                                <td class="text-end">{% if act.subtipo and act.subtipo.valor_x_ha_mo %}{{ act.subtipo.valor_x_ha_mo|floatformat:2 }}{% elif act.tipo.valor_x_ha_mo %}{{ act.tipo.valor_x_ha_mo|floatformat:2 }}{% else %}—{% endif %} dia-h/ha</td>
+                                                                                                <td class="text-end">R$ {{ act.valor_hombre|floatformat:2 }}</td>
+                                                                                                <td class="text-end">R$ {{ act.total_mo|floatformat:2 }}</td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+                                                                        {% endif %}
+
+                                                                        {% if act.cantidad_h_maq %}
+                                                                            <div class="mt-3 border-top pt-3">
+                                                                                <div class="fw-bold mb-3">
+                                                                                    <i class="mdi mdi-tractor me-1 text-primary"></i>
+                                                                                    {% translate "Maquinaria" %}
+                                                                                </div>
+                                                                                <div class="table-responsive">
+                                                                                    <table class="table table-sm align-middle mb-0" style="table-layout:fixed">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th style="width:55%">{% translate "Actividad" %}</th>
+                                                                                                <th class="text-end" style="width:15%">{% translate "Cantidad" %}</th>
+                                                                                                <th class="text-end" style="width:15%">{% translate "Costo unitario" %}</th>
+                                                                                                <th class="text-end" style="width:15%">{% translate "Subtotal" %}</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                                                                                                    {{ act.tipo.nombre }}{% if act.subtipo %} · {{ act.subtipo.nombre }}{% endif %}
+                                                                                                </td>
+                                                                                                <td class="text-end">{% if act.subtipo and act.subtipo.valor_x_ha_mq %}{{ act.subtipo.valor_x_ha_mq|floatformat:2 }}{% elif act.tipo.valor_x_ha_mq %}{{ act.tipo.valor_x_ha_mq|floatformat:2 }}{% else %}—{% endif %} h/ha</td>
+                                                                                                <td class="text-end">R$ {{ act.valor_h_maq|floatformat:2 }}</td>
+                                                                                                <td class="text-end">R$ {{ act.total_maq|floatformat:2 }}</td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+                                                                        {% endif %}
+
+                                                                        {% if act.insumos.exists %}
+                                                                            <div class="mt-3 border-top pt-3">
+                                                                                <div class="fw-bold mb-3">
+                                                                                    <i class="mdi mdi-cube-outline me-1 text-success"></i>
+                                                                                    {% translate "Insumos aplicados" %}
+                                                                                    <span class="badge badge-fase-agro-secondary ms-2">
+                                                                                        {{ act.insumos.count }}
+                                                                                    </span>
+                                                                                </div>
+                                                                                <div class="table-responsive">
+                                                                                    <table class="table table-sm align-middle mb-0" style="table-layout:fixed;font-size:.78rem">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th style="width:36%">{% translate "Insumo" %}</th>
+                                                                                                <th class="text-end" style="width:18%">{% translate "Dosis" %}</th>
+                                                                                                <th class="text-end" style="width:16%">{% translate "R$/ha" %}</th>
+                                                                                                <th class="text-end" style="width:20%">{% translate "Total" %}</th>
+                                                                                                <th style="width:10%"></th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            {% for insumo in act.insumos.all %}
+                                                                                                <tr id="insumo-row-{{ insumo.id }}">
+                                                                                                    <td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                                                                                                        {{ insumo.producto.nombre }}
+                                                                                                    </td>
+                                                                                                    <td class="text-end" id="insumo-dosis-{{ insumo.id }}">
+                                                                                                        {{ insumo.dosis|floatformat:2 }} {% if insumo.um %}{{ insumo.um.abreviatura }}{% endif %}/ha
+                                                                                                    </td>
+                                                                                                    <td class="text-end">
+                                                                                                        {% if insumo.costo_ha %}R$ {{ insumo.costo_ha|floatformat:2 }}{% else %}<span class="text-muted">-</span>{% endif %}
+                                                                                                    </td>
+                                                                                                    <td class="text-end">
+                                                                                                        {% if insumo.costo_total %}R$ {{ insumo.costo_total|floatformat:0 }}{% else %}<span class="text-muted">-</span>{% endif %}
+                                                                                                    </td>
+                                                                                                    <td class="text-end" style="width:70px">
+                                                                                                        <button class="btn btn-sm btn-outline-secondary py-0 px-1 me-1"
+                                                                                                                onclick="editarInsumo({{ insumo.id }}, {{ insumo.dosis }}, '{{ insumo.um.abreviatura|default:'' }}')"
+                                                                                                                title="Editar">
+                                                                                                            <i class="mdi mdi-pencil" style="font-size:.75rem"></i>
+                                                                                                        </button>
+                                                                                                        <button class="btn btn-sm btn-outline-danger py-0 px-1"
+                                                                                                                onclick="borrarInsumo({{ insumo.id }})"
+                                                                                                                title="Eliminar">
+                                                                                                            <i class="mdi mdi-delete" style="font-size:.75rem"></i>
+                                                                                                        </button>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            {% endfor %}
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+                                                                        {% endif %}
+
+                                                                        {% if act.total %}
+                                                                            <div class="mt-3 border-top pt-3 d-flex justify-content-end">
+                                                                                <div class="fw-bold">
+                                                                                    {% translate "Total actividad" %}:
+                                                                                    <span class="text-success ms-2">R$ {{ act.total|floatformat:2 }}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        {% endif %}
+
+                                                                        {% with cosecha=act.camposcosecha %}
+                                                                        {% if cosecha %}
+                                                                            <div class="mt-3 border-top pt-3">
+                                                                                <div class="fw-bold mb-2">
+                                                                                    <i class="mdi mdi-basket-fill me-1 text-warning"></i>
+                                                                                    {% translate "Cosecha" %}
+                                                                                </div>
+                                                                                <div class="row g-2 small">
+                                                                                    <div class="col-md-3">
+                                                                                        <span class="text-muted">{% translate "Rendimiento" %}:</span>
+                                                                                        <strong>{{ cosecha.rendimiento|floatformat:2 }}</strong>
+                                                                                    </div>
+                                                                                    {% for mov in cosecha.movimientos_stock.all %}
+                                                                                        {% if mov.destino == 'M' %}
+                                                                                        <div class="col-md-3">
+                                                                                            <span class="text-muted">{% translate "Semilla" %}:</span>
+                                                                                            <strong class="text-success">{{ mov.cantidad|floatformat:0 }} kg</strong>
+                                                                                        </div>
+                                                                                        {% else %}
+                                                                                        <div class="col-md-3">
+                                                                                            <span class="text-muted">{% translate "Consumo" %}:</span>
+                                                                                            <strong>{{ mov.cantidad|floatformat:0 }} kg</strong>
+                                                                                        </div>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                    {% if cosecha.comentarios_cosecha %}
+                                                                                    <div class="col-12 text-muted fst-italic">{{ cosecha.comentarios_cosecha }}</div>
+                                                                                    {% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% endwith %}
+
+                                                                        {% with insp=act.camposinspeccion %}
+                                                                        {% if insp %}
+                                                                            <div class="mt-3 border-top pt-3">
+                                                                                <div class="fw-bold mb-2">
+                                                                                    <i class="mdi mdi-clipboard-check-outline me-1 text-info"></i>
+                                                                                    {% translate "Inspección de semilla" %}
+                                                                                </div>
+                                                                                <div class="row g-2 small">
+                                                                                    <div class="col-md-3">
+                                                                                        <span class="text-muted">{% translate "Resultado" %}:</span>
+                                                                                        {% if insp.resultado == "APROBADO" %}
+                                                                                            <span class="badge bg-success ms-1">{% translate "Aprobado" %}</span>
+                                                                                        {% elif insp.resultado == "RECHAZADO" %}
+                                                                                            <span class="badge bg-danger ms-1">{% translate "Rechazado" %}</span>
+                                                                                        {% else %}
+                                                                                            <span class="badge bg-secondary ms-1">—</span>
+                                                                                        {% endif %}
+                                                                                    </div>
+                                                                                    {% if insp.cant_semilla_mult_ha %}
+                                                                                    <div class="col-md-3">
+                                                                                        <span class="text-muted">{% translate "Aprobadas/ha" %}:</span>
+                                                                                        <strong>{{ insp.cant_semilla_mult_ha|floatformat:0 }} {% if insp.um %}{{ insp.um.abreviatura }}{% endif %}</strong>
+                                                                                    </div>
+                                                                                    {% endif %}
+                                                                                    {% if insp.responsable %}
+                                                                                    <div class="col-md-3">
+                                                                                        <span class="text-muted">{% translate "Responsable" %}:</span>
+                                                                                        <strong>{{ insp.responsable }}</strong>
+                                                                                    </div>
+                                                                                    {% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% endwith %}
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+
+                                                    <!-- FIN DE FASE -->
+                                                    {% if fase.estado == "cerrado" and fase.fecha_fin %}
+                                                        <div class="timeline-phase-footer">
+                                                            <div class="phase-checkered-icon">
+                                                                <i class="mdi mdi-flag-checkered"></i>
+                                                            </div>
+
+                                                            <div class="phase-label ">
+                                                                {% translate "Fin de fase" %}
+                                                                <span class="badge badge-fase-agro-secondary">
+                                                                    {{ fase.get_tipo_display|upper }}
+                                                                </span>
+                                                                <span class="phase-date">
+                                                                    <i class="mdi mdi-calendar-check me-1"></i>
+                                                                    {{ fase.fecha_fin|date:"d/m/Y" }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="timeline-phase-footer">
+                                                            <div class="phase-checkered-icon">
+                                                                <i class="mdi mdi-hourglass"></i>
+                                                            </div>
+
+                                                            <div class="phase-label phase-label-agro">
+                                                                {% translate "Fase en curso" %}
+                                                                <span class="badge badge-fase-agro">
+                                                                    {{ fase.get_tipo_display|upper }}
+                                                                </span>
+                                                                <span class="phase-date">
+                                                                    {{ fase_group.list|length }}
+                                                                    {% if fase_group.list|length == 1 %}
+                                                                        {% translate "actividad" %}
+                                                                    {% else %}
+                                                                        {% translate "actividades" %}
+                                                                    {% endif %}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+
+                                                {% endwith %}
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <div class="text-center py-5">
+                                            <i class="mdi mdi-calendar-remove-outline display-4 text-muted mb-3"></i>
+                                            <h5 class="mb-3">{% translate "No hay actividades registradas" %}</h5>
+                                            <p class="text-muted mb-4">
+                                                {% translate "Comienza agregando la primera actividad para este ciclo productivo" %}
+                                            </p>
+                                            {% if not ciclo.fecha_fin %}
+                                                <a href="{% url 'vista_agregar_actividad' id_ciclo=ciclo.id %}" class="btn btn-success">
+                                                    <i class="mdi mdi-plus-circle-outline me-1"></i>
+                                                    {% translate "Agregar primera actividad" %}
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block custom_js %}
+<script>
+setTimeout(function () {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) { new bootstrap.Alert(alert).close(); });
+}, 5000);
+
+var CSRF = '{{ csrf_token }}';
+
+function borrarActividad(id) {
+    if (!confirm('¿Eliminar esta actividad y todos sus insumos?')) return;
+    $.post('/ajax/actividad/' + id + '/eliminar/', {csrfmiddlewaretoken: CSRF})
+     .done(function(r) {
+        if (r.ok) {
+            var card = document.querySelector('.activity-card[data-act-id="' + id + '"]');
+            if (card) { $(card).fadeOut(300, function(){ $(this).remove(); }); }
+            else { location.reload(); }
+        } else { alert(r.error || 'Error al eliminar'); }
+     });
+}
+
+function borrarInsumo(id) {
+    if (!confirm('¿Eliminar este insumo?')) return;
+    $.post('/ajax/insumo/' + id + '/eliminar/', {csrfmiddlewaretoken: CSRF})
+     .done(function(r) {
+        if (r.ok) {
+            $('#insumo-row-' + id).fadeOut(300, function(){ $(this).remove(); });
+        } else {
+            alert(r.error || 'Error al eliminar');
+        }
+     });
+}
+
+var _insumoEditId = null;
+function editarInsumo(id, dosis, um) {
+    _insumoEditId = id;
+    $('#edit-insumo-dosis').val(dosis);
+    $('#edit-insumo-um').text(um + '/ha');
+    new bootstrap.Modal(document.getElementById('modalEditarInsumo')).show();
+}
+
+$('#formEditarInsumo').on('submit', function(e) {
+    e.preventDefault();
+    var nuevaDosis = $('#edit-insumo-dosis').val();
+    $.post('/ajax/insumo/' + _insumoEditId + '/editar/', {
+        csrfmiddlewaretoken: CSRF,
+        dosis: nuevaDosis,
+    }).done(function(r) {
+        if (r.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('modalEditarInsumo')).hide();
+            $('#insumo-dosis-' + _insumoEditId).text(r.dosis_fmt);
+        } else {
+            alert(r.error || 'Error al editar');
+        }
+    });
+});
+</script>
+
+<!-- Modal editar insumo -->
+<div class="modal fade" id="modalEditarInsumo" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Editar dosis</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formEditarInsumo">
+          <div class="mb-3">
+            <label class="form-label small">Dosis <span id="edit-insumo-um" class="text-muted"></span></label>
+            <input type="number" id="edit-insumo-dosis" class="form-control form-control-sm" step="0.001" min="0">
+          </div>
+          <button type="submit" class="btn btn-success btn-sm w-100">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

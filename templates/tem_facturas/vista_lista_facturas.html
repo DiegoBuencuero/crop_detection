@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="col-12 grid-margin">
+  <div class="card">
+    <div class="card-body">
+
+      {% if messages %}
+      <div class="mb-4">
+          {% for message in messages %}
+          <div class="alert {{ message.tags }} alert-dismissible fade show d-flex align-items-center" role="alert">
+              <i class="mdi
+                  {% if 'success' in message.tags %}mdi-check-circle
+                  {% elif 'danger' in message.tags %}mdi-alert-circle
+                  {% elif 'warning' in message.tags %}mdi-alert
+                  {% else %}mdi-information{% endif %}
+                  me-2"></i>
+              <div>{{ message }}</div>
+              <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+          </div>
+          {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+              <h4 class="card-title mb-0">
+                  <i class="mdi mdi-file-document-outline icon-agro me-2"></i>
+                  {% translate "Facturas de Compra" %}
+              </h4>
+              <p class="card-description mb-0">{% trans "Listado de facturas ingresadas" %}</p>
+          </div>
+          <div class="d-flex gap-2">
+              <a href="{% url 'vista_cargar_factura' %}" class="btn btn-outline-secondary btn-sm">
+                  <i class="mdi mdi-file-upload-outline me-1"></i>{% translate "Cargar PDF" %}
+              </a>
+              <a href="{% url 'vista_cargar_factura_manual' %}" class="btn btn-success btn-sm">
+                  <i class="mdi mdi-keyboard me-1"></i>{% translate "Carga manual" %}
+              </a>
+          </div>
+      </div>
+      <!-- TABLA -->
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>{% trans "Número" %}</th>
+              <th>{% trans "Proveedor" %}</th>
+              <th>{% trans "Fecha" %}</th>
+              <th>{% trans "Vencimiento" %}</th>
+              <th>{% trans "Total" %}</th>
+              <th>{% trans "Ítems" %}</th>
+              <th>{% trans "Creada" %}</th>
+              <th class="text-center">{% trans "PDF" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for factura in facturas %}
+            <tr>
+              <td>{{ factura.numero }}</td>
+              <td>{{ factura.proveedor.razon_social }}</td>
+              <td>{{ factura.fecha|date:"d/m/Y" }}</td>
+              <td>{% if factura.fecha_vencimiento %}{{ factura.fecha_vencimiento|date:"d/m/Y" }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+              <td>${{ factura.total|floatformat:2 }}</td>
+              <td>{{ factura.items.count }}</td>
+              <td>{{ factura.creada|date:"d/m/Y H:i" }}</td>
+              <td class="text-center">
+                {% if factura.archivo_pdf %}
+                <a href="{{ factura.archivo_pdf.url }}" target="_blank" title="Ver PDF">
+                  <i class="mdi mdi-file-pdf-box" style="font-size: 1.5rem; color: #c0392b;"></i>
+                </a>
+                {% else %}
+                <i class="mdi mdi-file-pdf-box" style="font-size: 1.5rem; opacity: 0.25;"></i>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="8" class="text-center">
+                {% trans "No hay facturas cargadas" %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% block custom_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    setTimeout(function () {
+        document.querySelectorAll('.alert').forEach(function(alert) {
+            new bootstrap.Alert(alert).close();
+        });
+    }, 5000);
+});
+</script>
+{% endblock %}
+
+{% endblock %}
+
+{% block nav %}
+{% include 'nav_home.html' %}
+{% endblock %}
