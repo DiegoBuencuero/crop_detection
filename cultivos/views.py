@@ -9,7 +9,7 @@ from ml_modules.processors import procesar_imagen_cultivos
 
 
 def index(request):
-    return render(request, 'index_crop.html')
+    return render(request, 'index.html')
 
 
 class TipoCultivoViewSet(viewsets.ReadOnlyModelViewSet):
