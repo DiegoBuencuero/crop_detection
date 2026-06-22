@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Laboratorio HSV{% endblock %}
+
+{% block content %}
+<div class="content-wrapper" style="padding: 2rem;">
+    <div class="container-fluid">
+
+        <div class="mb-4">
+            <h3 class="fw-bold mb-1" style="color: #1f2937;">
+                <i class="mdi mdi-flask text-success me-2"></i>Laboratorio HSV
+            </h3>
+            <p class="text-muted small">Analiza y ajusta rangos HSV de cultivos</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Upload -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-3">Cargar imagen</h5>
+
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label class="form-label">Selecciona imagen</label>
+                                <input type="file" name="imagen" accept="image/*" class="form-control" required>
+                                <small class="text-muted">PNG, JPG, JPEG</small>
+                            </div>
+
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="mdi mdi-upload me-2"></i>Analizar
+                            </button>
+                        </form>
+
+                        {% if error %}
+                        <div class="alert alert-danger mt-3">
+                            {{ error }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultados -->
+            {% if estadisticas %}
+            <div class="col-lg-8">
+                <!-- Imagen -->
+                {% if imagen_base64 %}
+                <div class="card mb-4">
+                    <img src="data:image/jpeg;base64,{{ imagen_base64 }}" class="card-img-top" alt="Imagen" style="height: 300px; object-fit: cover;">
+                </div>
+                {% endif %}
+
+                <!-- Datos HSV -->
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-4">📊 Análisis HSV</h5>
+
+                        <div class="row g-3">
+                            <!-- HUE -->
+                            <div class="col-md-4">
+                                <div style="background: #f0fdf4; padding: 1rem; border-radius: 0.5rem;">
+                                    <p class="fw-bold small mb-2">🎨 HUE (Color)</p>
+                                    <table class="small w-100" style="line-height: 1.6;">
+                                        <tr>
+                                            <td>Min:</td>
+                                            <td class="text-end"><strong>{{ estadisticas.hue.min }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Max:</td>
+                                            <td class="text-end"><strong>{{ estadisticas.hue.max }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Promedio:</td>
+                                            <td class="text-end"><strong>{{ estadisticas.hue.promedio|floatformat:1 }}</strong></td>
+                                        </tr>
+                                        <tr style="border-top: 1px solid #d1e7dd;">
+                                            <td>P10:</td>
+                                            <td class="text-end">{{ estadisticas.hue.p10 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>P50:</td>
+                                            <td class="text-end">{{ estadisticas.hue.p50 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>P90:</td>
+                                            <td class="text-end">{{ estadisticas.hue.p90 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- SATURATION -->
+                            <div class="col-md-4">
+                                <div style="background: #fef3c7; padding: 1rem; border-radius: 0.5rem;">
+                                    <p class="fw-bold small mb-2">🔆 SATURATION (Intensidad)</p>
+                                    <table class="small w-100" style="line-height: 1.6;">
+                                        <tr>
+                                            <td>Min:</td>
+                                            <td class="text-end"><strong>{{ estadisticas.saturation.min }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Max:</td>
+                                            <td class="text-end"><strong>{{ estadisticas.saturation.max }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Promedio:</td>
+                                            <td class="text-end"><strong>{{ estadisticas.saturation.promedio|floatformat:1 }}</strong></td>
+                                        </tr>
+                                        <tr style="border-top: 1px solid #fcd34d;">
+                                            <td>P10:</td>
+                                            <td class="text-end">{{ estadisticas.saturation.p10 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>P50:</td>
+                                            <td class="text-end">{{ estadisticas.saturation.p50 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>P90:</td>
+                                            <td class="text-end">{{ estadisticas.saturation.p90 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- VALUE -->
+                            <div class="col-md-4">
+                                <div style="background: #dbeafe; padding: 1rem; border-radius: 0.5rem;">
+                                    <p class="fw-bold small mb-2">💡 VALUE (Brillo)</p>
+                                    <table class="small w-100" style="line-height: 1.6;">
+                                        <tr>
+                                            <td>Min:</td>
+                                            <td class="text-end"><strong>{{ estadisticas.value.min }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Max:</td>
+                                            <td class="text-end"><strong>{{ estadisticas.value.max }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Promedio:</td>
+                                            <td class="text-end"><strong>{{ estadisticas.value.promedio|floatformat:1 }}</strong></td>
+                                        </tr>
+                                        <tr style="border-top: 1px solid #bfdbfe;">
+                                            <td>P10:</td>
+                                            <td class="text-end">{{ estadisticas.value.p10 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>P50:</td>
+                                            <td class="text-end">{{ estadisticas.value.p50 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>P90:</td>
+                                            <td class="text-end">{{ estadisticas.value.p90 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rango Sugerido -->
+                        <div class="mt-4 p-3 rounded" style="background: #f3e8ff; border-left: 4px solid #7c3aed;">
+                            <p class="fw-bold small mb-2">💡 RANGO SUGERIDO para processors.py</p>
+                            <code style="display: block; padding: 0.5rem; background: white; border-radius: 0.3rem; font-size: 0.9rem;">
+lower = ({{ rango_sugerido.lower.0 }}, {{ rango_sugerido.lower.1 }}, {{ rango_sugerido.lower.2 }})<br>
+upper = ({{ rango_sugerido.upper.0 }}, {{ rango_sugerido.upper.1 }}, {{ rango_sugerido.upper.2 }})
+                            </code>
+                            <small class="d-block mt-2 text-muted">
+                                Copia estos valores a la función _identificar_cultivo() en ml_modules/processors.py
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}
