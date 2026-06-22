@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Analizar Cultivo{% endblock %}
+
+{% block content %}
+<div class="content-wrapper" style="padding: 2rem;">
+    <div class="container-fluid">
+
+        <div class="mb-4">
+            <h3 class="fw-bold mb-1" style="color: #1f2937;">
+                <i class="mdi mdi-upload text-success me-2"></i>Analizar Imagen
+            </h3>
+            <p class="text-muted small">Sube una foto de tu cultivo para obtener análisis automático</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+
+                {% if messages %}
+                <div class="mb-4">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <i class="mdi mdi-alert-circle me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="card">
+                    <div class="card-body p-4">
+                        <form method="post" enctype="multipart/form-data" novalidate>
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="mdi mdi-image-plus text-success me-2"></i>Selecciona imagen
+                                </label>
+                                {{ form.imagen }}
+                                {% if form.imagen.errors %}
+                                    <div class="alert alert-danger small mt-2">
+                                        {{ form.imagen.errors }}
+                                    </div>
+                                {% endif %}
+                                <small class="d-block mt-2 text-muted">
+                                    Formatos: PNG, JPG, JPEG (máx 50MB)
+                                </small>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="mdi mdi-play-circle-outline me-2"></i>Analizar imagen
+                                </button>
+                                <a href="/" class="btn btn-outline-secondary">Volver</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
