@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from .forms import AnalisisImagenForm
@@ -11,7 +10,6 @@ def index(request):
     return render(request, 'index.html')
 
 
-@login_required
 def analizar_imagen(request):
     """Vista para upload y análisis de imagen"""
 
